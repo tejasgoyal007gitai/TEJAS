@@ -67,9 +67,20 @@
     color: var(--muted);
     text-decoration: none;
     transition: color 0.25s;
+    position: relative;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: -4px;
+    width: 0; height: 1px;
+    background: var(--accent);
+    transition: width 0.3s ease;
   }
 
   .nav-links a:hover { color: var(--accent); }
+  .nav-links a:hover::after { width: 100%; }
 
   .hamburger {
     display: none;
@@ -110,6 +121,34 @@
     pointer-events: none;
   }
 
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .blob1 {
+    width: 280px; height: 280px;
+    background: var(--accent-light);
+    top: 12%; left: 4%;
+    animation: floatBlob 9s ease-in-out infinite;
+  }
+
+  .blob2 {
+    width: 200px; height: 200px;
+    background: var(--teal);
+    bottom: 8%; right: 12%;
+    animation: floatBlob 11s ease-in-out infinite reverse;
+  }
+
+  @keyframes floatBlob {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(20px,-30px) scale(1.1); }
+  }
+
   .hero-inner {
     max-width: 1100px;
     margin: 0 auto;
@@ -118,6 +157,8 @@
     grid-template-columns: 1fr 1fr;
     gap: 4rem;
     align-items: center;
+    position: relative;
+    z-index: 1;
   }
 
   .hero-tag {
@@ -143,7 +184,18 @@
 
   .hero h1 em {
     font-style: italic;
-    color: var(--accent);
+    background: linear-gradient(90deg, var(--accent), var(--teal), var(--accent-light), var(--accent));
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradientShift 7s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
   }
 
   .hero-sub {
@@ -171,6 +223,8 @@
     cursor: pointer;
     transition: all 0.3s ease;
     border: none;
+    position: relative;
+    overflow: hidden;
   }
 
   .btn-primary {
@@ -193,6 +247,19 @@
     border-color: var(--accent);
     color: var(--accent);
     transform: translateY(-2px);
+  }
+
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    transform: scale(0);
+    animation: rippleAnim 0.6s linear;
+    pointer-events: none;
+  }
+
+  @keyframes rippleAnim {
+    to { transform: scale(3); opacity: 0; }
   }
 
   .hero-stats {
@@ -263,6 +330,13 @@
     margin: 1rem 0 3rem;
   }
 
+  /* TILT-ABLE CARDS (shared) */
+  .tiltable {
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 0.15s ease, box-shadow 0.3s ease;
+  }
+
   /* EDUCATION */
   #education { background: var(--warm-white); }
 
@@ -298,7 +372,6 @@
   .edu-card:hover::before { transform: scaleY(1); }
 
   .edu-card:hover {
-    transform: translateY(-4px);
     box-shadow: 0 20px 40px rgba(0,0,0,0.08);
   }
 
@@ -333,11 +406,85 @@
     border: 1px solid var(--border);
   }
 
-  /* PROJECTS */
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  /* PROJECTS / CAROUSEL */
+  #projects { position: relative; overflow: hidden; }
+
+  #projects .section-inner { margin-bottom: 0; }
+
+  .carousel-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 1140px;
+    margin: 0 auto;
+  }
+
+  .carousel-viewport {
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .carousel-track {
+    display: flex;
     gap: 1.5rem;
+    cursor: grab;
+    user-select: none;
+  }
+
+  .carousel-track.dragging { cursor: grabbing; }
+
+  .carousel-track .project-card {
+    flex: 0 0 300px;
+    max-width: 300px;
+  }
+
+  .car-btn {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: var(--ink);
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .car-btn:hover:not(:disabled) {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    transform: scale(1.08);
+  }
+
+  .car-btn:disabled { opacity: 0.35; cursor: default; }
+
+  .carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2.2rem;
+  }
+
+  .car-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 100px;
+    background: var(--border);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    padding: 0;
+  }
+
+  .car-dot.active {
+    background: var(--accent);
+    width: 24px;
   }
 
   .project-card {
@@ -350,8 +497,7 @@
   }
 
   .project-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.12);
     border-color: var(--accent-light);
   }
 
@@ -368,17 +514,64 @@
     border: 1px solid var(--border);
   }
 
+  .project-tag-mini {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
   .project-title {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.4rem;
+    font-size: 1.35rem;
     font-weight: 600;
-    margin-bottom: 0.8rem;
+    margin-bottom: 0.7rem;
   }
 
   .project-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 1.1rem;
+  }
+
+  .project-car-hint {
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    border-top: 1px dashed var(--border);
+    padding-top: 0.8rem;
+  }
+
+  /* MODAL CAR BLOCKS */
+  .modal-car-block { margin-bottom: 1.3rem; }
+  .modal-car-block:last-child { margin-bottom: 0; }
+
+  .modal-car-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .modal-car-label::before {
+    content: '';
+    width: 14px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .modal-car-text {
     font-size: 0.87rem;
     color: var(--muted);
-    line-height: 1.75;
+    line-height: 1.8;
   }
 
   /* ACHIEVEMENTS */
@@ -403,7 +596,6 @@
   }
 
   .achieve-card:hover {
-    transform: translateY(-4px);
     box-shadow: 0 20px 40px rgba(0,0,0,0.08);
     border-color: var(--accent-light);
   }
@@ -450,7 +642,6 @@
   }
 
   .resp-card:hover {
-    transform: translateY(-4px);
     box-shadow: 0 20px 40px rgba(0,0,0,0.08);
     border-color: var(--teal);
   }
@@ -522,7 +713,6 @@
   }
 
   .extra-card:hover {
-    transform: translateY(-4px);
     box-shadow: 0 20px 40px rgba(0,0,0,0.08);
   }
 
@@ -737,6 +927,8 @@
     .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
     .modal { padding: 2rem; }
     .modal-title { font-size: 1.5rem; }
+    .carousel-track .project-card { flex-basis: 78vw; max-width: 78vw; }
+    .car-btn { width: 38px; height: 38px; }
   }
 
   @media (max-width: 480px) {
@@ -765,31 +957,33 @@
 
 <!-- HERO -->
 <section class="hero">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
   <div class="hero-inner">
     <div class="hero-left fade-up">
       <span class="hero-tag">IIM Bangalore · BBA DBE</span>
       <h1>Tejas<br><em>Goyal</em></h1>
       <p class="hero-sub">Finance & Business Enthusiast with a passion for entrepreneurship, sustainability, and creative leadership.</p>
       <div class="hero-cta">
-        <a href="#projects" class="btn btn-primary">View Projects</a>
-        <a href="#contact" class="btn btn-outline">Get in Touch</a>
+        <a href="#projects" class="btn btn-primary" onclick="createRipple(event)">View Projects</a>
+        <a href="#contact" class="btn btn-outline" onclick="createRipple(event)">Get in Touch</a>
       </div>
     </div>
     <div class="hero-stats fade-up" style="transition-delay:0.2s">
       <div class="stat-card">
-        <div class="stat-number">14.3M</div>
+        <div class="stat-number" data-target="14.3" data-suffix="M">0</div>
         <div class="stat-label">Social Media Views</div>
       </div>
       <div class="stat-card">
-        <div class="stat-number">91.4%</div>
+        <div class="stat-number" data-target="91.4" data-suffix="%">0</div>
         <div class="stat-label">Class XII Score</div>
       </div>
       <div class="stat-card">
-        <div class="stat-number">&lt;1K</div>
+        <div class="stat-number" data-target="1" data-prefix="&lt;" data-suffix="K">0</div>
         <div class="stat-label">Int'l Olympiad Rank</div>
       </div>
       <div class="stat-card">
-        <div class="stat-number">3×</div>
+        <div class="stat-number" data-target="3" data-suffix="×">0</div>
         <div class="stat-label">Gujarat Dance Title</div>
       </div>
     </div>
@@ -803,25 +997,25 @@
     <h2 class="section-title fade-up">Academic<br>Qualifications</h2>
     <div class="divider fade-up"></div>
     <div class="edu-grid">
-      <div class="edu-card fade-up" onclick="openModal('edu1')">
+      <div class="edu-card fade-up tiltable" onclick="openModal('edu1')">
         <div class="edu-year">2025 – 28</div>
         <div class="edu-course">UG in Entrepreneurship</div>
         <div class="edu-institute">Institute of Venture Building</div>
         <span class="edu-grade">Pursuing</span>
       </div>
-      <div class="edu-card fade-up" onclick="openModal('edu2')" style="transition-delay:0.1s">
+      <div class="edu-card fade-up tiltable" onclick="openModal('edu2')" style="transition-delay:0.1s">
         <div class="edu-year">2025 – 28</div>
         <div class="edu-course">BBA DBE</div>
         <div class="edu-institute">IIM Bangalore</div>
         <span class="edu-grade">Pursuing</span>
       </div>
-      <div class="edu-card fade-up" onclick="openModal('edu3')" style="transition-delay:0.15s">
+      <div class="edu-card fade-up tiltable" onclick="openModal('edu3')" style="transition-delay:0.15s">
         <div class="edu-year">2025</div>
         <div class="edu-course">Class XII · CBSE</div>
         <div class="edu-institute">Amarchand Singhvi International School</div>
         <span class="edu-grade">91.4%</span>
       </div>
-      <div class="edu-card fade-up" onclick="openModal('edu4')" style="transition-delay:0.2s">
+      <div class="edu-card fade-up tiltable" onclick="openModal('edu4')" style="transition-delay:0.2s">
         <div class="edu-year">2023</div>
         <div class="edu-course">Class X · State Board</div>
         <div class="edu-institute">St. Xavier's School</div>
@@ -831,25 +1025,75 @@
   </div>
 </section>
 
-<!-- PROJECTS -->
+<!-- PROJECTS (CAR framework carousel) -->
 <section id="projects">
   <div class="section-inner">
-    <p class="section-label fade-up">Work</p>
+    <p class="section-label fade-up">Work · Challenge → Action → Result</p>
     <h2 class="section-title fade-up">Live Projects</h2>
     <div class="divider fade-up"></div>
-    <div class="projects-grid">
-      <div class="project-card fade-up" onclick="openModal('proj1')">
-        <div class="project-icon">♻️</div>
-        <div class="project-title">Recycled Stool</div>
-        <div class="project-desc">A durable, eco-friendly stool built from plastic waste and bottles collected from the street — upcycling at its finest.</div>
-      </div>
-      <div class="project-card fade-up" onclick="openModal('proj2')" style="transition-delay:0.1s">
-        <div class="project-icon">🌿</div>
-        <div class="project-title">Green House Project</div>
-        <div class="project-desc">Designed an innovative greenhouse model using affordable local materials and a battery-powered exhaust system for school environmental initiatives.</div>
+  </div>
+
+  <div class="carousel-wrap fade-up">
+    <button class="car-btn car-prev" id="carPrev" aria-label="Previous project">&#10094;</button>
+
+    <div class="carousel-viewport" id="carouselViewport">
+      <div class="carousel-track" id="carouselTrack">
+
+        <div class="project-card" onclick="openModal('proj_chess')">
+          <div class="project-icon">♟️</div>
+          <div class="project-tag-mini">Business Experiment · IIM Bangalore</div>
+          <div class="project-title">Chess Empire Strike</div>
+          <div class="project-desc">Flipped ₹250 seed capital into a self-run online chess tournament business — zero venue, global reach via Lichess.</div>
+          <div class="project-car-hint">Challenge → Action → Result</div>
+        </div>
+
+        <div class="project-card" onclick="openModal('proj_prodylitics')">
+          <div class="project-icon">📦</div>
+          <div class="project-tag-mini">Product Management · IIM Indore</div>
+          <div class="project-title">Prodylitics — MESA</div>
+          <div class="project-desc">Data-driven strategy to cut e-commerce return rates for a marketplace, built with Team MESA.</div>
+          <div class="project-car-hint">Challenge → Action → Result</div>
+        </div>
+
+        <div class="project-card" onclick="openModal('proj_ucb')">
+          <div class="project-icon">🏬</div>
+          <div class="project-tag-mini">Retail Strategy · Field Immersion</div>
+          <div class="project-title">Retail Immersion — UCB</div>
+          <div class="project-desc">On-ground deep-dive into the P&L and operations of a Benetton outlet at Express Avenue Mall, Chennai.</div>
+          <div class="project-car-hint">Challenge → Action → Result</div>
+        </div>
+
+        <div class="project-card" onclick="openModal('proj_aurecell')">
+          <div class="project-icon">🧬</div>
+          <div class="project-tag-mini">Biotech Venture · Business Plan</div>
+          <div class="project-title">AuReCell</div>
+          <div class="project-desc">Business plan for a biotech venture using bacteria to convert toxic gold-mining waste into pure gold.</div>
+          <div class="project-car-hint">Challenge → Action → Result</div>
+        </div>
+
+        <div class="project-card" onclick="openModal('proj_liftguard')">
+          <div class="project-icon">🌾</div>
+          <div class="project-tag-mini">AgTech · Product Concept</div>
+          <div class="project-title">LiftGuard AI</div>
+          <div class="project-desc">Concept and go-to-market for an AI platform that diagnoses crop disease from a smartphone photo.</div>
+          <div class="project-car-hint">Challenge → Action → Result</div>
+        </div>
+
+        <div class="project-card" onclick="openModal('proj_vodafone')">
+          <div class="project-icon">🤝</div>
+          <div class="project-tag-mini">Case Analysis · Negotiation</div>
+          <div class="project-title">Merging Giants</div>
+          <div class="project-desc">Analysis of the Vodafone–Idea merger through the lens of negotiation technique and persuasion strategy.</div>
+          <div class="project-car-hint">Challenge → Action → Result</div>
+        </div>
+
       </div>
     </div>
+
+    <button class="car-btn car-next" id="carNext" aria-label="Next project">&#10095;</button>
   </div>
+
+  <div class="carousel-dots" id="carouselDots"></div>
 </section>
 
 <!-- ACHIEVEMENTS -->
@@ -859,21 +1103,21 @@
     <h2 class="section-title fade-up">Achievements</h2>
     <div class="divider fade-up"></div>
     <div class="achieve-grid">
-      <div class="achieve-card fade-up" onclick="openModal('ach1')">
+      <div class="achieve-card fade-up tiltable" onclick="openModal('ach1')">
         <div class="achieve-icon">🏆</div>
         <div>
           <div class="achieve-title">Olympiad Excellence</div>
           <div class="achieve-desc">1st place (school level) in Business Olympiad. Top &lt;1000 internationally. 3rd & 1st place in Quant Olympiad (2023, 2024).</div>
         </div>
       </div>
-      <div class="achieve-card fade-up" onclick="openModal('ach2')" style="transition-delay:0.1s">
+      <div class="achieve-card fade-up tiltable" onclick="openModal('ach2')" style="transition-delay:0.1s">
         <div class="achieve-icon">📱</div>
         <div>
           <div class="achieve-title">Media Team</div>
           <div class="achieve-desc">Managed official social media for government events. Generated 14.3M views through analytics-driven strategy.</div>
         </div>
       </div>
-      <div class="achieve-card fade-up" onclick="openModal('ach3')" style="transition-delay:0.15s">
+      <div class="achieve-card fade-up tiltable" onclick="openModal('ach3')" style="transition-delay:0.15s">
         <div class="achieve-icon">💰</div>
         <div>
           <div class="achieve-title">Event Stall</div>
@@ -891,17 +1135,17 @@
     <h2 class="section-title fade-up">Positions of<br>Responsibility</h2>
     <div class="divider fade-up"></div>
     <div class="resp-grid">
-      <div class="resp-card fade-up" onclick="openModal('resp1')">
+      <div class="resp-card fade-up tiltable" onclick="openModal('resp1')">
         <div class="resp-role">Administration</div>
         <div class="resp-title">ESports Admin</div>
         <div class="resp-desc">Coordinated logistics, schedules, and player welfare for a 4-day global championship esports team.</div>
       </div>
-      <div class="resp-card fade-up" onclick="openModal('resp2')" style="transition-delay:0.1s">
+      <div class="resp-card fade-up tiltable" onclick="openModal('resp2')" style="transition-delay:0.1s">
         <div class="resp-role">Management</div>
         <div class="resp-title">Student Incharge</div>
         <div class="resp-desc">Managed a group of 25 students through practice sessions to final performances during school events.</div>
       </div>
-      <div class="resp-card fade-up" onclick="openModal('resp3')" style="transition-delay:0.15s">
+      <div class="resp-card fade-up tiltable" onclick="openModal('resp3')" style="transition-delay:0.15s">
         <div class="resp-role">Cultural</div>
         <div class="resp-title">Cultural Committee</div>
         <div class="resp-desc">Spearheaded cultural programming and orchestrated 20+ events. Chaired dance initiatives and choreographed performances.</div>
@@ -917,12 +1161,12 @@
     <h2 class="section-title fade-up">Extra Curricular</h2>
     <div class="divider fade-up"></div>
     <div class="extra-grid">
-      <div class="extra-card fade-up" onclick="openModal('extra1')">
+      <div class="extra-card fade-up tiltable" onclick="openModal('extra1')">
         <div class="extra-type">Performing Arts</div>
         <div class="extra-title">Dance & Theater</div>
         <div class="extra-desc">Professional competitor with Gujarat State title (3 years), State 2nd place (self-choreographed), and District acting awards in mythological roles.</div>
       </div>
-      <div class="extra-card fade-up" onclick="openModal('extra2')" style="transition-delay:0.1s">
+      <div class="extra-card fade-up tiltable" onclick="openModal('extra2')" style="transition-delay:0.1s">
         <div class="extra-type">Sports</div>
         <div class="extra-title">Karate & Basketball</div>
         <div class="extra-desc">Karate Brown Belt after 3 years of dedicated training. High school basketball team member for 2 years.</div>
@@ -1028,24 +1272,116 @@
       title: 'Class X · State Board',
       body: `<p>Completed Class X at <strong>St. Xavier's School</strong> under the State Board, achieving a score of <strong>89.0%</strong>.</p>`
     },
-    proj1: {
-      tag: 'Live Project · Sustainability',
-      title: 'Recycled Stool',
-      body: `<ul>
-        <li>Designed and built a durable, sustainable stool from plastic waste and bottles collected from the street.</li>
-        <li>Applied upcycling techniques to repurpose 16 filled bottles into eco-friendly furniture for community use.</li>
-        <li>Demonstrated hands-on resourcefulness and commitment to environmental sustainability.</li>
-      </ul>`
+
+    proj_chess: {
+      tag: 'Live Project · Business Experiment',
+      title: 'Chess Empire Strike',
+      body: `
+        <div class="modal-car-block">
+          <div class="modal-car-label">Challenge</div>
+          <div class="modal-car-text">Design and run a genuinely profitable, near-zero-capital business inside a BBA-DBE course constraint — proving a scalable "Event-as-a-Service" model with real customers, real cash, and real operational risk.</div>
+        </div>
+        <div class="modal-car-block">
+          <div class="modal-car-label">Action</div>
+          <div class="modal-car-text">Built an Event-as-a-Service pipeline: hyped a ₹50-entry "Chess Domination Cup" via WhatsApp, Instagram, and offline flyers using an AIDA funnel; ran a Swiss-system blitz tournament free on Lichess.org; collected entries via UPI and paid out prizes instantly. Added a reserve list, mandatory check-in, and anti-cheat rules after a mid-bracket no-show incident.</div>
+        </div>
+        <div class="modal-car-block">
+          <div class="modal-car-label">Result</div>
+          <div class="modal-car-text">12 players registered (60% of the 20-player target), generating ₹600 revenue against ₹550 costs — a real ₹50 net profit and 20% ROI on the ₹250 seed capital. Validated the break-even math at 11 players and produced a repeatable playbook for a recurring tournament series.</div>
+        </div>
+      `
     },
-    proj2: {
-      tag: 'Live Project · Sustainability',
-      title: 'Green House Project',
-      body: `<ul>
-        <li>Designed innovative greenhouse models and sourced affordable local materials for construction.</li>
-        <li>Built a functional frame with a battery-powered exhaust fan, highlighting sustainable prototyping skills.</li>
-        <li>Applied resource optimization to create an eco-friendly prototype for school environmental initiatives.</li>
-      </ul>`
+    proj_prodylitics: {
+      tag: 'Live Project · IIM Indore, Team MESA',
+      title: 'Prodylitics — Reducing E-Commerce Returns',
+      body: `
+        <div class="modal-car-block">
+          <div class="modal-car-label">Challenge</div>
+          <div class="modal-car-text">An e-commerce marketplace faced high product return rates eating into margins, with unclear drivers behind why customers were sending items back.</div>
+        </div>
+        <div class="modal-car-block">
+          <div class="modal-car-label">Action</div>
+          <div class="modal-car-text">Analysed the Prodylitics 2025 dataset to isolate return drivers — product category, pricing and discount depth, and delivery experience — then designed cross-functional solutions spanning quality assurance, tiered return policies, enhanced product listings (size charts, high-res images), and post-purchase engagement.</div>
+        </div>
+        <div class="modal-car-block">
+          <div class="modal-car-label">Result</div>
+          <div class="modal-car-text">Proposed a three-pillar action plan (Operations, Policies, Customer Experience) projected to deliver a 25% reduction in return rates, alongside quarterly vendor audits, capped discounting on high-return categories, and weekly return-tracking dashboards.</div>
+        </div>
+      `
     },
+    proj_ucb: {
+      tag: 'Live Project · Retail Field Immersion',
+      title: 'Retail Immersion — United Colors of Benetton',
+      body: `
+        <div class="modal-car-block">
+          <div class="modal-car-label">Challenge</div>
+          <div class="modal-car-text">Understand how a premium fast-fashion outlet in a high-rent mall location stays profitable despite thin margins, heavy discounting, and only ~20 daily customers.</div>
+        </div>
+        <div class="modal-car-block">
+          <div class="modal-car-label">Action</div>
+          <div class="modal-car-text">Conducted an in-store retail immersion — mapping the monthly P&L (₹30L revenue, 60% gross margin), inventory rotation (twice-monthly refresh), dead-stock discounting strategy, and staffing model across a 6-member team; documented UCB's AR-powered in-store engagement feature.</div>
+        </div>
+        <div class="modal-car-block">
+          <div class="modal-car-label">Result</div>
+          <div class="modal-car-text">Identified rent (40% of gross profit) as the key margin risk and delivered three high-leverage recommendations — geotargeted footfall marketing, tiered loyalty programs, and AOV upskilling — projected to lift monthly profit by over ₹50,000 against a 27.6% annualised ROI.</div>
+        </div>
+      `
+    },
+    proj_aurecell: {
+      tag: 'Live Project · Biotech Business Plan',
+      title: 'AuReCell — Bio-Mining Toxic Gold Waste',
+      body: `
+        <div class="modal-car-block">
+          <div class="modal-car-label">Challenge</div>
+          <div class="modal-car-text">Toxic gold residues around African mining regions contaminate soil and water, while the same regions suffer high unemployment — two problems with no shared solution.</div>
+        </div>
+        <div class="modal-car-block">
+          <div class="modal-car-label">Action</div>
+          <div class="modal-car-text">Designed a 6-step business model using <em>Cupriavidus metallidurans</em> bacteria to bio-convert toxic gold compounds into 24-carat gold — from community-sourced waste collection and lab cultivation through bioreactor purification — and built a go-to-market plan targeting electronics manufacturers, jewellers, and refineries via UN/NGO partnerships.</div>
+        </div>
+        <div class="modal-car-block">
+          <div class="modal-car-label">Result</div>
+          <div class="modal-car-text">Modelled a path to $2.8M Year-1 revenue (2kg pure gold/month) against ₹2.6Cr operating costs, plus a secondary licensing revenue stream — mapped against an 18-month implementation timeline and aligned to UN SDG 9 and SDG 12.</div>
+        </div>
+      `
+    },
+    proj_liftguard: {
+      tag: 'Live Project · AgTech Product Concept',
+      title: 'LiftGuard AI — AI Crop Health Diagnostics',
+      body: `
+        <div class="modal-car-block">
+          <div class="modal-car-label">Challenge</div>
+          <div class="modal-car-text">Smallholder and commercial farmers lose yield to crop disease they can't identify in time, and lack affordable access to expert agronomic advice.</div>
+        </div>
+        <div class="modal-car-block">
+          <div class="modal-car-label">Action</div>
+          <div class="modal-car-text">Shaped the product journey — snap-and-upload photo diagnosis, instant AI-driven identification, and tiered Normal vs. Premium plans offering everything from basic recommendations to personalised biologist-backed guidance — anchored in a "farmer-first, research-driven" mission.</div>
+        </div>
+        <div class="modal-car-block">
+          <div class="modal-car-label">Result</div>
+          <div class="modal-car-text">Framed a value proposition around three measurable outcomes for farmers — saved crops via early detection, reduced financial losses, and higher yields — positioning the product for partnerships with agricultural organisations and NGOs.</div>
+        </div>
+      `
+    },
+    proj_vodafone: {
+      tag: 'Case Analysis · Negotiation & Persuasion',
+      title: 'Merging Giants — Vodafone-Idea Case Study',
+      body: `
+        <div class="modal-car-block">
+          <div class="modal-car-label">Challenge</div>
+          <div class="modal-car-text">Explain how two fierce telecom rivals, both under existential pressure from Jio's price war, negotiated a ~$23B merger of equals without either side losing control or face.</div>
+        </div>
+        <div class="modal-car-block">
+          <div class="modal-car-label">Action</div>
+          <div class="modal-car-text">Deconstructed the deal into three negotiation techniques (independent-valuation anchoring, merger-of-equals framing, integrative multi-issue bargaining) and three persuasion strategies (vision-based framing, authority signalling, reciprocity via structured concessions), rating each on real-world effectiveness.</div>
+        </div>
+        <div class="modal-car-block">
+          <div class="modal-car-label">Result</div>
+          <div class="modal-car-text">Distilled transferable lessons — objective anchors defuse conflict, framing shapes acceptance, and phased terms unlock deals — with direct personal applications identified for salary negotiations and group-project restructuring.</div>
+        </div>
+      `
+    },
+
     ach1: {
       tag: 'Achievement · Olympiads',
       title: 'Olympiad Excellence',
@@ -1158,6 +1494,191 @@
   }, { threshold: 0.1 });
 
   document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // BUTTON RIPPLE EFFECT
+  function createRipple(e) {
+    const btn = e.currentTarget;
+    const circle = document.createElement('span');
+    const diameter = Math.max(btn.clientWidth, btn.clientHeight);
+    const rect = btn.getBoundingClientRect();
+    circle.style.width = circle.style.height = diameter + 'px';
+    circle.style.left = (e.clientX - rect.left - diameter / 2) + 'px';
+    circle.style.top = (e.clientY - rect.top - diameter / 2) + 'px';
+    circle.classList.add('ripple');
+    const oldRipple = btn.querySelector('.ripple');
+    if (oldRipple) oldRipple.remove();
+    btn.appendChild(circle);
+    setTimeout(() => circle.remove(), 600);
+  }
+
+  // COUNT-UP STAT NUMBERS
+  function animateCount(el) {
+    const target = parseFloat(el.dataset.target);
+    const suffix = el.dataset.suffix || '';
+    const prefix = el.dataset.prefix || '';
+    const isDecimal = String(el.dataset.target).includes('.');
+    const duration = 1400;
+    const start = performance.now();
+
+    function tick(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = target * eased;
+      el.textContent = prefix + (isDecimal ? value.toFixed(1) : Math.round(value)) + suffix;
+      if (progress < 1) requestAnimationFrame(tick);
+      else el.textContent = prefix + (isDecimal ? target.toFixed(1) : target) + suffix;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  const statObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !entry.target.dataset.counted) {
+        entry.target.dataset.counted = 'true';
+        animateCount(entry.target);
+      }
+    });
+  }, { threshold: 0.4 });
+
+  document.querySelectorAll('.stat-number').forEach(el => statObserver.observe(el));
+
+  // TILT ON HOVER FOR CARDS
+  document.querySelectorAll('.tiltable, .project-card').forEach(card => {
+    card.classList.add('tiltable');
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = ((y - centerY) / centerY) * -5;
+      const rotateY = ((x - centerX) / centerX) * 5;
+      card.style.transform = `perspective(700px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(700px) rotateX(0) rotateY(0) translateY(0)';
+    });
+  });
+
+  // PROJECTS CAROUSEL
+  (function initCarousel() {
+    const track = document.getElementById('carouselTrack');
+    const viewport = document.getElementById('carouselViewport');
+    const cards = Array.from(track.children);
+    const prevBtn = document.getElementById('carPrev');
+    const nextBtn = document.getElementById('carNext');
+    const dotsWrap = document.getElementById('carouselDots');
+
+    let index = 0;
+    let autoplayTimer = null;
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartTransform = 0;
+
+    // build dots
+    cards.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'car-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Go to project ' + (i + 1));
+      dot.addEventListener('click', () => goTo(i));
+      dotsWrap.appendChild(dot);
+    });
+
+    function step() {
+      if (cards.length < 2) return cards[0].getBoundingClientRect().width;
+      const r0 = cards[0].getBoundingClientRect();
+      const r1 = cards[1].getBoundingClientRect();
+      return r1.left - r0.left;
+    }
+
+    function maxIndex() {
+      const viewportWidth = viewport.getBoundingClientRect().width;
+      const cardStep = step();
+      const visibleCount = Math.max(1, Math.floor(viewportWidth / cardStep));
+      return Math.max(0, cards.length - visibleCount);
+    }
+
+    function update() {
+      const clamped = Math.max(0, Math.min(maxIndex(), index));
+      index = clamped;
+      track.style.transition = 'transform 0.5s cubic-bezier(.22,.61,.36,1)';
+      track.style.transform = `translateX(${-index * step()}px)`;
+      prevBtn.disabled = index === 0;
+      nextBtn.disabled = index >= maxIndex();
+      Array.from(dotsWrap.children).forEach((d, i) => d.classList.toggle('active', i === index));
+    }
+
+    function goTo(i) {
+      index = i;
+      update();
+      resetAutoplay();
+    }
+
+    function move(dir) {
+      index += dir;
+      update();
+      resetAutoplay();
+    }
+
+    function startAutoplay() {
+      autoplayTimer = setInterval(() => {
+        index = index >= maxIndex() ? 0 : index + 1;
+        update();
+      }, 4200);
+    }
+
+    function resetAutoplay() {
+      clearInterval(autoplayTimer);
+      startAutoplay();
+    }
+
+    prevBtn.addEventListener('click', () => move(-1));
+    nextBtn.addEventListener('click', () => move(1));
+
+    viewport.addEventListener('mouseenter', () => clearInterval(autoplayTimer));
+    viewport.addEventListener('mouseleave', () => resetAutoplay());
+
+    // Drag / swipe support
+    function dragStart(clientX) {
+      isDragging = true;
+      dragStartX = clientX;
+      dragStartTransform = -index * step();
+      track.style.transition = 'none';
+      track.classList.add('dragging');
+      clearInterval(autoplayTimer);
+    }
+
+    function dragMove(clientX) {
+      if (!isDragging) return;
+      const delta = clientX - dragStartX;
+      track.style.transform = `translateX(${dragStartTransform + delta}px)`;
+    }
+
+    function dragEnd(clientX) {
+      if (!isDragging) return;
+      isDragging = false;
+      track.classList.remove('dragging');
+      const delta = clientX - dragStartX;
+      const threshold = step() * 0.2;
+      if (delta < -threshold) index += 1;
+      else if (delta > threshold) index -= 1;
+      update();
+      resetAutoplay();
+    }
+
+    track.addEventListener('mousedown', (e) => dragStart(e.clientX));
+    window.addEventListener('mousemove', (e) => dragMove(e.clientX));
+    window.addEventListener('mouseup', (e) => dragEnd(e.clientX));
+
+    track.addEventListener('touchstart', (e) => dragStart(e.touches[0].clientX), { passive: true });
+    track.addEventListener('touchmove', (e) => dragMove(e.touches[0].clientX), { passive: true });
+    track.addEventListener('touchend', (e) => dragEnd(e.changedTouches[0].clientX));
+
+    window.addEventListener('resize', update);
+
+    update();
+    startAutoplay();
+  })();
 </script>
 </body>
 </html>
